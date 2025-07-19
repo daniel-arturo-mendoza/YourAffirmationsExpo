@@ -4,6 +4,7 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
+  Pressable,
   StyleSheet,
   TextInput,
   Animated,
@@ -421,7 +422,10 @@ const App: React.FC = () => {
             {moods.map((mood) => (
               <TouchableOpacity
                 key={mood}
-                onPress={() => selectChip("mood", mood)}
+                onPress={() => {
+                  console.log("🎯 Mood chip pressed:", mood);
+                  selectChip("mood", mood);
+                }}
                 style={[styles.chip, selectedMood === mood && styles.chipSelected]}
               >
                 <Text style={[styles.chipText, selectedMood === mood && styles.chipTextSelected]}>
@@ -485,19 +489,34 @@ const App: React.FC = () => {
 
         {/* Buttons */}
         <View style={styles.iconContainer}>
-          <TouchableOpacity 
-            onPress={() => updateAffirmation(generateAffirmation)} 
+          <Pressable 
+            onPress={() => {
+              console.log("🔄 Reload button pressed");
+              updateAffirmation(generateAffirmation);
+            }} 
             style={[styles.iconButton, isLoading && { opacity: 0.5 }]}
             disabled={isLoading}
           >
             <MaterialCommunityIcons name="reload" size={iconSize} color={isLoading ? "#999" : "#5F8B66"} />
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity onPress={copyToClipboard} style={styles.iconButton}>
+          <TouchableOpacity 
+            onPress={() => {
+              console.log("📋 Copy button pressed");
+              copyToClipboard();
+            }} 
+            style={styles.iconButton}
+          >
             <MaterialCommunityIcons name="content-copy" size={iconSize} color="#BFA58A" />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={shareAffirmation} style={styles.iconButton}>
+          <TouchableOpacity 
+            onPress={() => {
+              console.log("📤 Share button pressed");
+              shareAffirmation();
+            }} 
+            style={styles.iconButton}
+          >
             <MaterialCommunityIcons name="share-variant" size={iconSize} color="#BFA58A" />
           </TouchableOpacity>
 
@@ -507,7 +526,10 @@ const App: React.FC = () => {
         {/* Rewarded Ad Button */}
         <View style={styles.specialAffirmationWrapper}>  
           <TouchableOpacity 
-            onPress={generateSpecialAffirmation} 
+            onPress={() => {
+              console.log("🎯 Special affirmation button pressed");
+              generateSpecialAffirmation();
+            }} 
             style={[styles.confirmButton, isLoading && { opacity: 0.5 }]} 
             disabled={isLoading}
           >
@@ -564,15 +586,15 @@ const App: React.FC = () => {
 
       </View>
 
-      {/* Banner Ad Placeholder */}
-      <View style={styles.adContainer}>
-        {/* <BannerAd
+      {/* Banner Ad Placeholder - Temporarily disabled for debugging */}
+      {/* <View style={styles.adContainer}>
+        <BannerAd
           unitId={BANNER_AD_UNIT_ID} // Use TestIds.BANNER for testing, replace with BANNER_AD_UNIT_ID for production
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
           requestOptions={{
             requestNonPersonalizedAdsOnly: true,
-          }}/> */}
-      </View>
+          }}/>
+      </View> */}
 
     </View>
   );
