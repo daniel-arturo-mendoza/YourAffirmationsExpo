@@ -22,6 +22,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import Modal from "react-native-modal";
 import { getStoredUUID } from "./utils/uuidGenerator";
+import KoFiButton from "./components/KoFiButton";
 
 const API_APP_LAMBDA_URL = "https://iw26yfkgne.execute-api.us-east-1.amazonaws.com/Prod/affirmation";
 const KOFI_URL = "https://ko-fi.com/youraffirmations";
@@ -66,17 +67,7 @@ const App: React.FC = () => {
   // Toggle modal visibility
   const toggleModal = () => setModalVisible(!isModalVisible);
 
-  const openKoFi = () => {
-    Linking.openURL(KOFI_URL);
-  };
 
-  const KoFiButton = () => {
-    return (
-      <TouchableOpacity onPress={openKoFi} style={styles.kofiButton}>
-        <Image source={{ uri: "https://storage.ko-fi.com/cdn/cup-border.png" }} style={styles.kofiIcon} />
-      </TouchableOpacity>
-    );
-  };
 
   const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -520,7 +511,7 @@ const App: React.FC = () => {
             <MaterialCommunityIcons name="share-variant" size={iconSize} color="#BFA58A" />
           </TouchableOpacity>
 
-          <KoFiButton />
+          <KoFiButton iconSize={iconSize} />
         </View>
 
         {/* Rewarded Ad Button */}
@@ -848,17 +839,7 @@ const styles = StyleSheet.create({
     color: "#555",
     fontFamily: "serif",
   },
-  kofiContainer: {
-    alignItems: "flex-start", // 🔹 Aligns to the left inside parent
-  },
-  kofiButton: {
-    padding: width * 0.02, // Adds some tappable area like the other icons
-  },
-  kofiIcon: {
-    width: iconSize,
-    height: iconSize,
-    resizeMode: "contain",
-  },
+
 });
 
 export default App;
