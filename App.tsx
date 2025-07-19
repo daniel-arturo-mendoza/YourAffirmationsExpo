@@ -23,9 +23,7 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-nat
 import Modal from "react-native-modal";
 import { getStoredUUID } from "./utils/uuidGenerator";
 import KoFiButton from "./components/KoFiButton";
-
-const API_APP_LAMBDA_URL = "https://iw26yfkgne.execute-api.us-east-1.amazonaws.com/Prod/affirmation";
-const KOFI_URL = "https://ko-fi.com/youraffirmations";
+import { API_APP_LAMBDA_URL, KOFI_URL, MOODS, ITEMS, TOPICS } from "./utils/constants";
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -45,9 +43,9 @@ const iconSpacing = height * 0.03; // Adjust vertical spacing
 const clicksBeforeAds = 10;
 
 // Define chip categories
-const moods = ["Happy", "Motivated", "Calm", "Confident", "Stressed", "Sad"];
-const items = ["Success", "Love", "Health", "Wealth", "Money", "Travel"];
-const topics = ["Mindset", "Productivity", "Relationships", "Happiness", "Prosperity", "Ownership"];
+const moods = MOODS;
+const items = ITEMS;
+const topics = TOPICS;
 
 const App: React.FC = () => {
   const [clickCount, setClickCount] = useState(0);
