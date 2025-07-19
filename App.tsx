@@ -24,6 +24,7 @@ import Modal from "react-native-modal";
 import { getStoredUUID } from "./utils/uuidGenerator";
 import KoFiButton from "./components/KoFiButton";
 import { API_APP_LAMBDA_URL, KOFI_URL, MOODS, ITEMS, TOPICS } from "./utils/constants";
+import { copyToClipboard, shareAffirmation } from "./utils/affirmationUtils";
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -336,25 +337,7 @@ const App: React.FC = () => {
       }
   };
 
-  const copyToClipboard = () => {
-      Clipboard.setString(affirmation);
-      if (Platform.OS === 'android') {
-          ToastAndroid.show('Affirmation copied to clipboard!', ToastAndroid.SHORT);
-      } else {
-          Alert.alert('Copied!', 'Affirmation copied to clipboard!');
-      }
-  };
 
-  const shareAffirmation = async () => {
-      try {
-          await Share.share({
-              message: affirmation,
-              title: 'My Affirmation'
-          });
-      } catch (error) {
-          console.error('Error sharing:', error);
-      }
-  };
 
   return (
 
@@ -492,7 +475,7 @@ const App: React.FC = () => {
           <TouchableOpacity 
             onPress={() => {
               console.log("📋 Copy button pressed");
-              copyToClipboard();
+              copyToClipboard(affirmation);
             }} 
             style={styles.iconButton}
           >
@@ -502,7 +485,7 @@ const App: React.FC = () => {
           <TouchableOpacity 
             onPress={() => {
               console.log("📤 Share button pressed");
-              shareAffirmation();
+              shareAffirmation(affirmation);
             }} 
             style={styles.iconButton}
           >
