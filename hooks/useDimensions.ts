@@ -15,13 +15,18 @@ export const useDimensions = (): UseDimensionsReturn => {
     const screenHeight = Dimensions.get("window").height;
     const { width, height } = Dimensions.get("window");
     
+    // Use responsive calculations
+    const baseWidth = 375; // iPhone X width as reference
+    const baseHeight = 812; // iPhone X height as reference
+    const scale = Math.min(width / baseWidth, height / baseHeight);
+    
     return {
       screenHeight,
       screenWidth: width,
-      dynamicSpacing: screenHeight * 0.01, // 1% of screen height
-      textFieldHeight: screenHeight * 0.25, // 25% of screen height
-      iconSize: Math.min(width, height) * 0.10, // 10% of smaller dimension
-      iconSpacing: height * 0.03, // 3% of screen height
+      dynamicSpacing: Math.max(4, Math.round(8 * scale)), // Responsive spacing
+      textFieldHeight: Math.max(200, Math.round(screenHeight * 0.25)), // Responsive height
+      iconSize: Math.max(24, Math.round(Math.min(width, height) * 0.06)), // Responsive icon size
+      iconSpacing: Math.max(16, Math.round(height * 0.03)), // Responsive spacing
     };
   }, []);
 

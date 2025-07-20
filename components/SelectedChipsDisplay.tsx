@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, ScrollView, Animated, StyleSheet } from "react-native";
-import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { useResponsiveSizing } from "../hooks/useResponsiveSizing";
 
 interface SelectedChipsDisplayProps {
   selectedMood: string | null;
@@ -21,14 +21,18 @@ export const SelectedChipsDisplay: React.FC<SelectedChipsDisplayProps> = ({
   topicAnim,
   chipContainerAnim,
 }) => {
+  const { componentSizes, spacing } = useResponsiveSizing();
+  
+  const responsiveStyles = createResponsiveStyles(componentSizes, spacing);
+  
   return (
     <Animated.View
       style={[
-        styles.animatedChipContainer,
+        responsiveStyles.animatedChipContainer,
         {
           height: chipContainerAnim.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, 80],
+            outputRange: [0, componentSizes.containerHeight],
           }),
           opacity: chipContainerAnim,
         },
@@ -37,27 +41,27 @@ export const SelectedChipsDisplay: React.FC<SelectedChipsDisplayProps> = ({
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.selectedChipsContainer}
+        contentContainerStyle={responsiveStyles.selectedChipsContainer}
         contentInsetAdjustmentBehavior="automatic"
         snapToAlignment="center"
         bounces={false}
         alwaysBounceHorizontal={false}
       >
         {selectedMood && (
-          <Animated.View style={[styles.selectedChip, { opacity: moodAnim }]}>
-            <Text style={styles.selectedChipText}>{selectedMood}</Text>
+          <Animated.View style={[responsiveStyles.selectedChip, { opacity: moodAnim }]}>
+            <Text style={responsiveStyles.selectedChipText}>{selectedMood}</Text>
           </Animated.View>
         )}
 
         {selectedItem && (
-          <Animated.View style={[styles.selectedChip, { opacity: itemAnim }]}>
-            <Text style={styles.selectedChipText}>{selectedItem}</Text>
+          <Animated.View style={[responsiveStyles.selectedChip, { opacity: itemAnim }]}>
+            <Text style={responsiveStyles.selectedChipText}>{selectedItem}</Text>
           </Animated.View>
         )}
 
         {selectedTopic && (
-          <Animated.View style={[styles.selectedChip, { opacity: topicAnim }]}>
-            <Text style={styles.selectedChipText}>{selectedTopic}</Text>
+          <Animated.View style={[responsiveStyles.selectedChip, { opacity: topicAnim }]}>
+            <Text style={responsiveStyles.selectedChipText}>{selectedTopic}</Text>
           </Animated.View>
         )}
       </ScrollView>
@@ -65,31 +69,32 @@ export const SelectedChipsDisplay: React.FC<SelectedChipsDisplayProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createResponsiveStyles = (componentSizes: any, spacing: any) => StyleSheet.create({
   animatedChipContainer: {
     overflow: "hidden",
-    marginBottom: hp("0.5%"),
+    marginBottom: spacing.sm,
   },
   selectedChipsContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginBottom: hp("0.3%"),
-    paddingVertical: hp("0.5%"),
-    paddingHorizontal: 10,
+    marginBottom: spacing.xs,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
     alignItems: "center",
     minWidth: "100%",
     flexGrow: 1,
   },
   selectedChip: {
     backgroundColor: "#D9C4B1",
-    paddingVertical: hp("0.8%"),
-    paddingHorizontal: wp("3%"),
+    paddingVertical: componentSizes.chipPadding,
+    paddingHorizontal: componentSizes.chipPadding,
     borderRadius: 15,
-    margin: wp("1%"),
-    marginRight: 8,
-    marginHorizontal: 4,
+    margin: spacing.xs,
+    marginRight: spacing.sm,
+    marginHorizontal: spacing.xs,
     alignItems: "center",
     justifyContent: "center",
+    minHeight: componentSizes.chipHeight,
   },
   selectedChipText: {
     fontSize: 16,
