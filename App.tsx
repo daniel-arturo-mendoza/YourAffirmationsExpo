@@ -31,6 +31,7 @@ import { useChipSelection } from "./hooks/useChipSelection";
 
 
 
+
 const fetchUUID = async () => {
     const userUUID = await getStoredUUID();
     console.log("Generated UUID:", userUUID);
@@ -54,8 +55,8 @@ const topics = TOPICS;
 const App: React.FC = () => {
   const [clickCount, setClickCount] = useState(0);
 
-  //const related to the modal for rewarded Ad
-  const [isModalVisible, setModalVisible] = useState(false);
+  // Test modal state
+  const [isTestModalVisible, setTestModalVisible] = useState(false);
   const [question1, setQuestion1] = useState(""); // User input for Q1
   const [question2, setQuestion2] = useState(""); // User input for Q2
   const [specialAffirmation, setSpecialAffirmation] = useState("");
@@ -66,8 +67,7 @@ const App: React.FC = () => {
 
   const isAlternativeAdPath = useRef(false);
 
-  // Toggle modal visibility
-  const toggleModal = () => setModalVisible(!isModalVisible);
+  const toggleTestModal = () => setTestModalVisible(!isTestModalVisible);
 
 
 
@@ -287,12 +287,12 @@ const App: React.FC = () => {
           <KoFiButton iconSize={iconSize} />
         </View>
 
-        {/* Rewarded Ad Button */}
+        {/* Test Button */}
         <View style={styles.specialAffirmationWrapper}>  
           <TouchableOpacity 
             onPress={() => {
-              console.log("🎯 Special affirmation button pressed");
-              generateSpecialAffirmation();
+              console.log("🧪 Test button pressed!");
+              toggleTestModal();
             }} 
             style={[styles.confirmButton, isLoading && { opacity: 0.5 }]} 
             disabled={isLoading}
@@ -301,13 +301,15 @@ const App: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Bottom Sheet Modal */}
-        <Modal isVisible={isModalVisible} onBackdropPress={toggleModal} style={styles.modal}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Personalize Your Affirmation</Text>
+
+
+        {/* Test Modal Dialog */}
+        <Modal isVisible={isTestModalVisible} onBackdropPress={toggleTestModal} style={styles.testModal}>
+          <View style={styles.testModalContent}>
+            <Text style={styles.testModalTitle}>Personalize Your Affirmation</Text>
 
             {/* Question 1 */}
-            <Text style={styles.modalLabel}>What do you need most right now?</Text>
+            <Text style={styles.firstModalLabel}>What do you need most right now?</Text>
             <TextInput
               style={styles.input}
               placeholder="e.g., Confidence for my job interview"
@@ -391,6 +393,21 @@ const styles = StyleSheet.create({
   specialAffirmationWrapper: {
     marginBottom: hp("2%"),
     alignItems: "center",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    gap: 10,
+  },
+  testButton: {
+    backgroundColor: "#F28B82",
+    paddingVertical: hp("2%"),
+    paddingHorizontal: wp("5%"),
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
   },
   specialAffirmationButton: {
     backgroundColor: "#F28B82",
@@ -550,24 +567,33 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
   },
   modalTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 20,
     fontFamily: "serif",
+    textAlign: "center",
   },
   modalLabel: {
-    marginBottom: 5,
+    marginBottom: 10,
+    fontSize: 16,
+    fontWeight: "600",
+    fontFamily: "serif",
+  },
+  firstModalLabel: {
+    marginBottom: 10,
+    marginTop: 35,
     fontSize: 16,
     fontWeight: "600",
     fontFamily: "serif",
   },
   input: {
     backgroundColor: "#F0F0F0",
-    padding: 10,
+    padding: 15,
     borderRadius: 10,
-    marginBottom: 15,
+    marginBottom: 20,
     fontSize: 16,
     fontFamily: "serif",
+    minHeight: 50, // Makes inputs taller
   },
   confirmButton: {
     marginTop: hp("0.6%"),
@@ -586,10 +612,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#F3EDE7",
-    padding: 10,
+    padding: 15,
     borderRadius: 10,
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 15,
+    marginBottom: 15,
   },
   adInfoText: {
     fontSize: 14,
@@ -610,6 +636,55 @@ const styles = StyleSheet.create({
   adText: {
     fontSize: 16,
     color: "#555",
+    fontFamily: "serif",
+  },
+  // Test modal styles
+  testModal: {
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 0,
+  },
+  testModalContent: {
+    backgroundColor: "white",
+    padding: 30,
+    borderRadius: 20,
+    width: "90%",
+    height: hp("40%"), // Takes 40% of screen height
+    justifyContent: "space-between", // Distributes content evenly
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  testModalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+    fontFamily: "serif",
+    textAlign: "center",
+  },
+  testModalMessage: {
+    fontSize: 16,
+    color: "#555",
+    marginBottom: 20,
+    fontFamily: "serif",
+    textAlign: "center",
+  },
+  agreeButton: {
+    backgroundColor: "#C9B299",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    alignItems: "center",
+  },
+  agreeButtonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#000",
     fontFamily: "serif",
   },
 
