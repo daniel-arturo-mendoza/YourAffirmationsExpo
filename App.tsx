@@ -7,6 +7,9 @@ import {
 } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { MOODS, ITEMS, TOPICS } from "./utils/constants";
+import { ThemeProvider } from "./theme/ThemeContext";
+import { useTheme } from "./theme/ThemeContext";
+import { styledComponents, globalStyles } from "./theme/styledComponents";
 import { useAffirmationAnimation } from "./hooks/useAffirmationAnimation";
 import { useChipSelection } from "./hooks/useChipSelection";
 import { useModalDialog } from "./hooks/useModalDialog";
@@ -30,7 +33,9 @@ const moods = MOODS;
 const items = ITEMS;
 const topics = TOPICS;
 
-const App: React.FC = () => {
+const ThemedApp: React.FC = () => {
+  const { theme } = useTheme();
+  
   // Hooks for business logic
   const { dynamicSpacing, textFieldHeight, iconSize } = useDimensions();
   const { affirmation, specialAffirmation, isLoading, generateAffirmation, setAffirmation, setSpecialAffirmation } = useAffirmationGeneration();
@@ -62,6 +67,8 @@ const App: React.FC = () => {
 
 
 
+  const themedStyles = createThemedStyles(theme);
+  
   return (
     <MainLayout>
       <SelectedChipsDisplay
@@ -121,13 +128,16 @@ const App: React.FC = () => {
       />
 
       {/* Special Affirmation Button */}
-      <View style={styles.specialAffirmationWrapper}>  
+      <View style={themedStyles.specialAffirmationWrapper}>  
         <TouchableOpacity 
           onPress={handleSpecialAffirmation} 
-          style={[styles.specialAffirmationButton, isLoading && { opacity: 0.5 }]} 
+          style={[
+            themedStyles.specialAffirmationButton,
+            isLoading && globalStyles.disabled
+          ]} 
           disabled={isLoading}
         >
-          <Text style={styles.buttonText}>Get a Special Affirmation</Text>
+          <Text style={themedStyles.buttonText}>Get a Special Affirmation</Text>
         </TouchableOpacity>
       </View>
 
@@ -140,37 +150,32 @@ const App: React.FC = () => {
 
       {/* Display Special Affirmation */}
       {specialAffirmation ? (
-        <View style={styles.affirmationContainer}>
-          <Text style={styles.affirmationText}>{specialAffirmation}</Text>
+        <View style={themedStyles.affirmationContainer}>
+          <Text style={themedStyles.affirmationText}>{specialAffirmation}</Text>
         </View>
       ) : null}
     </MainLayout>
   );
 };
 
-// Styles
-const styles = StyleSheet.create({
+// Themed styles using theme system
+const createThemedStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9F6F2", // Matching background
+    backgroundColor: theme.colors.background,
     justifyContent: "space-between",
-    //paddingHorizontal: 20,
-    //paddingTop: 40,
   },
   contentContainer: {
-    flex: 1, // Makes sure this takes available space but doesn't push the ad down
-    paddingHorizontal: wp("5%"),
+    flex: 1,
+    paddingHorizontal: theme.spacing.screenPadding,
     paddingTop: wp("10%"),
     paddingBottom: hp("10%"),
     justifyContent: "space-evenly",
   },
   title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
+    ...styledComponents.text.title,
     paddingTop: hp("2%"),
     paddingBottom: hp("2%"),
-    fontFamily: "serif", // Adjust if you have a specific font
   },
   specialAffirmationWrapper: {
     marginTop: hp("3%"),
@@ -185,89 +190,83 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   testButton: {
-    backgroundColor: "#F28B82",
+    backgroundColor: theme.colors.primary,
     paddingVertical: hp("2%"),
     paddingHorizontal: wp("5%"),
-    borderRadius: 25,
+    borderRadius: theme.borderRadius.full,
     alignItems: "center",
     justifyContent: "center",
   },
   specialAffirmationButton: {
-    backgroundColor: "#F28B82",
+    backgroundColor: "#F28B82", // Original color
     paddingVertical: hp("2%"),
     paddingHorizontal: wp("5%"),
-    borderRadius: 25,
+    borderRadius: 25, // Original border radius
     alignItems: "center",
     justifyContent: "center",
   },
   buttonText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#000",
+    fontSize: 18, // Original font size
+    fontWeight: "bold" as const,
+    color: "#000", // Original text color
     fontFamily: "serif",
+    textAlign: "center" as const,
   },
   affirmationContainer: {
-    backgroundColor: "#F3EDE7",
-    borderRadius: 12,
-    padding: 20,
-    marginTop: hp("0.5%"),
-    marginBottom: hp("0.5%"),
-    elevation: 3,
+    ...styledComponents.card.container,
     justifyContent: "center",
     alignItems: "center",
     flex: 1,
   },
   affirmationText: {
+    ...styledComponents.text.body,
     textAlign: "center",
-    fontFamily: "serif",
-    color: "#555",
     flex: 1,
     textAlignVertical: "center",
   },
-
   rewardedAdButton: {
-    backgroundColor: "#F5A9B8",
-    paddingVertical: hp("0.5%"), // Slightly bigger for better touch area
-    //marginVertical: hp("20%"),
-    borderRadius: 25,
+    backgroundColor: theme.colors.warning,
+    paddingVertical: hp("0.5%"),
+    borderRadius: theme.borderRadius.full,
     alignItems: "center",
     justifyContent: "center",
-    width: "75%", // Slightly reduced width to look better
-    elevation: 3, // Subtle shadow for depth
+    width: "75%",
+    ...theme.shadows.md,
   },
-
   adInfoContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F3EDE7",
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 15,
-    marginBottom: 15,
+    backgroundColor: theme.colors.card,
+    padding: theme.spacing.md,
+    borderRadius: theme.borderRadius.md,
+    marginTop: theme.spacing.md,
+    marginBottom: theme.spacing.md,
   },
   adInfoText: {
-    fontSize: 14,
-    color: "#555",
-    marginLeft: 10, // Ensures space between icon & text
-    fontWeight: "600",
-    fontFamily: "serif",
+    ...styledComponents.text.caption,
+    marginLeft: theme.spacing.sm,
+    fontWeight: "600" as const,
   },
   adContainer: {
-    position: "absolute", // ✅ Keeps the ad at the bottom
+    position: "absolute",
     bottom: 0,
     width: "100%",
-    height: 60, // ✅ Ad banner height
-    backgroundColor: "#FFF",
+    height: 60,
+    backgroundColor: theme.colors.background,
     justifyContent: "center",
     alignItems: "center",
   },
   adText: {
-    fontSize: 16,
-    color: "#555",
-    fontFamily: "serif",
+    ...styledComponents.text.body,
   },
-
-
 });
+
+const App: React.FC = () => {
+  return (
+    <ThemeProvider>
+      <ThemedApp />
+    </ThemeProvider>
+  );
+};
 
 export default App;
