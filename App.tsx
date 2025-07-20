@@ -27,6 +27,7 @@ import { KOFI_URL, MOODS, ITEMS, TOPICS } from "./utils/constants";
 import { copyToClipboard, shareAffirmation } from "./utils/affirmationUtils";
 import { AffirmationService } from "./services/affirmationService";
 import { useAffirmationAnimation } from "./hooks/useAffirmationAnimation";
+import { useChipSelection } from "./hooks/useChipSelection";
 
 
 
@@ -70,60 +71,24 @@ const App: React.FC = () => {
 
 
 
-  const [selectedMood, setSelectedMood] = useState<string | null>(null);
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
-  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
   const [affirmation, setAffirmation] = useState<string>(
     "Tap the green reload button to generate your affirmation!"
   );
 
-  const [selectedChips, setSelectedChips] = useState<string[]>([]);
-  const chipContainerAnim = useRef(new Animated.Value(0)).current; // Initial height is 0
+  const {
+    selectedMood,
+    selectedItem,
+    selectedTopic,
+    selectedChips,
+    moodAnim,
+    itemAnim,
+    topicAnim,
+    chipContainerAnim,
+    selectChip,
+    getSelectedChips,
+  } = useChipSelection();
 
-  // Animated values for chip movement
-  const moodAnim = useRef(new Animated.Value(0)).current;
-  const itemAnim = useRef(new Animated.Value(0)).current;
-  const topicAnim = useRef(new Animated.Value(0)).current;
 
-  const selectChip = (category: "mood" | "item" | "topic", chip: string) => {
-    let newChip = null;
-
-    if (category === "mood") {
-      if (selectedMood === chip) return; // Prevent deselecting last chip
-      setSelectedMood(chip); // Update state immediately
-      animateChip(moodAnim);
-    }
-    if (category === "item") {
-      if (selectedItem === chip) return;
-      setSelectedItem(chip);
-      animateChip(itemAnim);
-    }
-    if (category === "topic") {
-      if (selectedTopic === chip) return;
-      setSelectedTopic(chip);
-      animateChip(topicAnim);
-    }
-  };
-
-  // Determine the number of selected chips
-  useEffect(() => {
-    const selectedCount = (selectedMood ? 1 : 0) + (selectedItem ? 1 : 0) + (selectedTopic ? 1 : 0);
-
-    Animated.timing(chipContainerAnim, {
-      toValue: selectedCount > 0 ? 1 : 0, // Expand when at least 1 chip is selected
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
-  }, [selectedMood, selectedItem, selectedTopic]);
-
-  const animateChip = (animation: Animated.Value) => {
-    animation.setValue(0); // Reset animation before starting
-    Animated.timing(animation, {
-      toValue: 1,
-      duration: 300, // Adjust for smoothness
-      useNativeDriver: true,
-    }).start();
-  };
 
   const { fadeAnim, fadeCreatingAnim, isLoading, showCreatingText, updateAffirmation } = useAffirmationAnimation();
 
@@ -133,10 +98,7 @@ const App: React.FC = () => {
   };
 
   const generateAffirmation = async () => {
-      const selectedChips = [];
-      if (selectedMood) selectedChips.push(selectedMood);
-      if (selectedItem) selectedChips.push(selectedItem);
-      if (selectedTopic) selectedChips.push(selectedTopic);
+      const selectedChips = getSelectedChips();
 
       try {
           const affirmation = await AffirmationService.generateAffirmation(selectedChips);
