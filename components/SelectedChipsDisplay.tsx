@@ -28,7 +28,7 @@ export const SelectedChipsDisplay: React.FC<SelectedChipsDisplayProps> = ({
         {
           height: chipContainerAnim.interpolate({
             inputRange: [0, 1],
-            outputRange: [0, 60],
+            outputRange: [0, 80],
           }),
           opacity: chipContainerAnim,
         },
@@ -40,6 +40,8 @@ export const SelectedChipsDisplay: React.FC<SelectedChipsDisplayProps> = ({
         contentContainerStyle={styles.selectedChipsContainer}
         contentInsetAdjustmentBehavior="automatic"
         snapToAlignment="center"
+        bounces={false}
+        alwaysBounceHorizontal={false}
       >
         {selectedMood && (
           <Animated.View style={[styles.selectedChip, { opacity: moodAnim }]}>
@@ -76,6 +78,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     alignItems: "center",
     minWidth: "100%",
+    flexGrow: 1,
   },
   selectedChip: {
     backgroundColor: "#D9C4B1",
@@ -83,11 +86,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp("3%"),
     borderRadius: 15,
     margin: wp("1%"),
-    fontSize: 16,
-    fontFamily: "serif",
-    color: "#000",
     marginRight: 8,
     marginHorizontal: 4,
+    alignItems: "center",
+    justifyContent: "center",
   },
   selectedChipText: {
     fontSize: 16,
