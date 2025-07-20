@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
 } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
 import { MOODS, ITEMS, TOPICS } from "./utils/constants";
-import { copyToClipboard, shareAffirmation } from "./utils/affirmationUtils";
-import { AffirmationService } from "./services/affirmationService";
 import { useAffirmationAnimation } from "./hooks/useAffirmationAnimation";
 import { useChipSelection } from "./hooks/useChipSelection";
 import { useModalDialog } from "./hooks/useModalDialog";
+import { useAffirmationGeneration } from "./hooks/useAffirmationGeneration";
+import { useDimensions } from "./hooks/useDimensions";
+import { useEventHandlers } from "./hooks/useEventHandlers";
 import { SpecialAffirmationModal } from "./components/SpecialAffirmationModal";
 import { ChipSelectionSection } from "./components/ChipSelectionSection";
 import { SelectedChipsDisplay } from "./components/SelectedChipsDisplay";
@@ -25,35 +25,17 @@ import { MainLayout } from "./components/MainLayout";
 
 
 
-const screenHeight = Dimensions.get("window").height;
-const { width, height } = Dimensions.get("window");
-const dynamicSpacing = screenHeight * 0.01; // 3% of screen height
-const textFieldHeight = screenHeight * 0.25; // 15% of screen height
-
-const iconSize = Math.min(width, height) * 0.10; // Adjust multiplier for best size
-const iconSpacing = height * 0.03; // Adjust vertical spacing
-
-const clicksBeforeAds = 10;
-
 // Define chip categories
 const moods = MOODS;
 const items = ITEMS;
 const topics = TOPICS;
 
 const App: React.FC = () => {
-  const [clickCount, setClickCount] = useState(0);
-
-  // Modal state
+  // Hooks for business logic
+  const { dynamicSpacing, textFieldHeight, iconSize } = useDimensions();
+  const { affirmation, specialAffirmation, isLoading, generateAffirmation, setAffirmation, setSpecialAffirmation } = useAffirmationGeneration();
   const { isModalVisible, toggleModal } = useModalDialog();
-  const [specialAffirmation, setSpecialAffirmation] = useState("");
-
-
-
-
-  const [affirmation, setAffirmation] = useState<string>(
-    "Tap the green reload button to generate your affirmation!"
-  );
-
+  
   const {
     selectedMood,
     selectedItem,
@@ -67,35 +49,16 @@ const App: React.FC = () => {
     getSelectedChips,
   } = useChipSelection();
 
+  const { fadeAnim, fadeCreatingAnim, showCreatingText, updateAffirmation } = useAffirmationAnimation();
 
-
-  const { fadeAnim, fadeCreatingAnim, isLoading, showCreatingText, updateAffirmation } = useAffirmationAnimation();
-
-
-
-  const generateAffirmation = async () => {
-      const selectedChips = getSelectedChips();
-
-      try {
-          const affirmation = await AffirmationService.generateAffirmation(selectedChips);
-          setAffirmation(affirmation);
-      } catch (error) {
-          console.error("❌ Error generating affirmation:", error);
-          setAffirmation("❌ Error generating affirmation. Please try again.");
-      }
-  };
-
-
-
-  const generateSpecialAffirmationAfterAd = async (need: string, tone: string) => {
-      try {
-          const affirmation = await AffirmationService.generateSpecialAffirmationAfterAd(need, tone);
-          setSpecialAffirmation(affirmation);
-      } catch (error) {
-          console.error("❌ Error generating special affirmation after ad:", error);
-          setSpecialAffirmation("❌ Error generating special affirmation. Please try again.");
-      }
-  };
+  // Event handlers
+  const { handleReload, handleCopy, handleShare, handleSpecialAffirmation, handleChipPress } = useEventHandlers({
+    affirmation,
+    generateAffirmation,
+    setAffirmation,
+    toggleModal,
+    getSelectedChips,
+  });
 
 
 
@@ -118,7 +81,7 @@ const App: React.FC = () => {
         selectedChip={selectedMood}
         onChipSelect={(chip) => selectChip("mood", chip)}
         dynamicSpacing={dynamicSpacing}
-        onChipPress={(chip) => console.log("🎯 Mood chip pressed:", chip)}
+        onChipPress={(chip) => handleChipPress(chip, "Mood")}
       />
 
       <ChipSelectionSection
@@ -127,6 +90,7 @@ const App: React.FC = () => {
         selectedChip={selectedItem}
         onChipSelect={(chip) => selectChip("item", chip)}
         dynamicSpacing={dynamicSpacing}
+        onChipPress={(chip) => handleChipPress(chip, "Item")}
       />
 
       <ChipSelectionSection
@@ -135,6 +99,7 @@ const App: React.FC = () => {
         selectedChip={selectedTopic}
         onChipSelect={(chip) => selectChip("topic", chip)}
         dynamicSpacing={dynamicSpacing}
+        onChipPress={(chip) => handleChipPress(chip, "Topic")}
       />
 
       {/* Affirmation Display */}
@@ -150,27 +115,15 @@ const App: React.FC = () => {
       <ActionButtons
         iconSize={iconSize}
         isLoading={isLoading}
-        onReload={() => {
-          console.log("🔄 Reload button pressed");
-          updateAffirmation(generateAffirmation, setAffirmation);
-        }}
-        onCopy={() => {
-          console.log("📋 Copy button pressed");
-          copyToClipboard(affirmation);
-        }}
-        onShare={() => {
-          console.log("📤 Share button pressed");
-          shareAffirmation(affirmation);
-        }}
+        onReload={handleReload}
+        onCopy={handleCopy}
+        onShare={handleShare}
       />
 
       {/* Special Affirmation Button */}
       <View style={styles.specialAffirmationWrapper}>  
         <TouchableOpacity 
-          onPress={() => {
-            console.log("🧪 Test button pressed!");
-            toggleModal();
-          }} 
+          onPress={handleSpecialAffirmation} 
           style={[styles.specialAffirmationButton, isLoading && { opacity: 0.5 }]} 
           disabled={isLoading}
         >
@@ -257,7 +210,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3EDE7",
     borderRadius: 12,
     padding: 20,
-    height: textFieldHeight,
     marginTop: hp("0.5%"),
     marginBottom: hp("0.5%"),
     elevation: 3,
@@ -266,7 +218,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   affirmationText: {
-    fontSize: textFieldHeight * 0.1,
     textAlign: "center",
     fontFamily: "serif",
     color: "#555",
