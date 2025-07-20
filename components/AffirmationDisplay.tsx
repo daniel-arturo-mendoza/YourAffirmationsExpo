@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, ScrollView, Animated, StyleSheet } from "react-native";
-import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { useResponsiveSizing } from "../hooks/useResponsiveSizing";
 
 interface AffirmationDisplayProps {
   affirmation: string;
@@ -17,22 +17,25 @@ export const AffirmationDisplay: React.FC<AffirmationDisplayProps> = ({
   fadeCreatingAnim,
   textFieldHeight,
 }) => {
+  const { spacing } = useResponsiveSizing();
   // Calculate font size to cover 60% of the container height (50% bigger than 40%)
   const fontSize = Math.max(16, Math.min(36, textFieldHeight * 0.6));
   
+  const responsiveStyles = createResponsiveStyles(spacing);
+  
   return (
-    <View style={[styles.affirmationContainer, { height: textFieldHeight }]}>
+    <View style={[responsiveStyles.affirmationContainer, { height: textFieldHeight }]}>
       <ScrollView 
         style={{ flex: 1 }} 
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
         showsVerticalScrollIndicator={false}
       >
         {showCreatingText ? (
-          <Animated.Text style={[styles.creatingText, { opacity: fadeCreatingAnim, fontSize }]}>
+          <Animated.Text style={[responsiveStyles.creatingText, { opacity: fadeCreatingAnim, fontSize }]}>
             Creating Your Affirmation...
           </Animated.Text>
         ) : (
-          <Animated.Text style={[styles.affirmationText, { opacity: fadeAnim, fontSize }]}>
+          <Animated.Text style={[responsiveStyles.affirmationText, { opacity: fadeAnim, fontSize }]}>
             {affirmation}
           </Animated.Text>
         )}
@@ -41,13 +44,13 @@ export const AffirmationDisplay: React.FC<AffirmationDisplayProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createResponsiveStyles = (spacing: any) => StyleSheet.create({
   affirmationContainer: {
     backgroundColor: "#F3EDE7",
     borderRadius: 12,
     padding: 20,
-    marginTop: hp("0.5%"),
-    marginBottom: hp("0.5%"),
+    marginTop: spacing.xs,
+    marginBottom: spacing.xs,
     elevation: 3,
     justifyContent: "center",
     alignItems: "center",
