@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import Modal from 'react-native-modal';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { AffirmationService } from '../services/affirmationService';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet,
+  Alert,
+} from "react-native";
+import Modal from "react-native-modal";
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { AffirmationService } from "../services/affirmationService";
 
 interface SpecialAffirmationModalProps {
   isVisible: boolean;
@@ -21,65 +28,77 @@ export const SpecialAffirmationModal: React.FC<SpecialAffirmationModalProps> = (
 
   const generateSpecialAffirmation = async () => {
     if (!question1.trim() || !question2.trim()) {
-      console.error("❌ Error generating special affirmation: Please fill in both questions to generate a special affirmation!");
+      Alert.alert("Error", "Please fill in both questions to generate a special affirmation!");
       return;
     }
 
     setIsLoading(true);
     try {
+      console.log("🎯 Generating special affirmation...");
       const affirmation = await AffirmationService.generateSpecialAffirmation(question1, question2);
       onAffirmationGenerated(affirmation);
       onClose();
-      // Reset form
       setQuestion1("");
       setQuestion2("");
     } catch (error) {
       console.error("❌ Error generating special affirmation:", error);
+      Alert.alert("Error", "Failed to generate special affirmation. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Modal isVisible={isVisible} onBackdropPress={onClose} style={styles.modal}>
+    <Modal
+      isVisible={isVisible}
+      onBackdropPress={onClose}
+      onSwipeComplete={onClose}
+      swipeDirection="down"
+      style={styles.modal}
+      animationIn="slideInUp"
+      animationOut="slideOutDown"
+    >
       <View style={styles.modalContent}>
-        <Text style={styles.modalTitle}>Personalize Your Affirmation</Text>
-
-        {/* Question 1 */}
-        <Text style={styles.firstModalLabel}>What do you need most right now?</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g., Confidence for my job interview"
-          value={question1}
-          onChangeText={setQuestion1}
-          maxLength={50}
-        />
-
-        {/* Question 2 */}
-        <Text style={styles.modalLabel}>How do you want it to feel?</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g., Powerful and inspiring"
-          value={question2}
-          onChangeText={setQuestion2}
-          maxLength={50}
-        />
-
-        {/* 🔹 New Message to Inform About Ad */}
-        <View style={styles.adInfoContainer}>
-          <MaterialCommunityIcons name="play-circle-outline" size={24} color="#C9B299" />
-          <Text style={styles.adInfoText}>
-            🎥 You'll watch a short ad before receiving your personalized affirmation!
-          </Text>
+        <View style={styles.handle} />
+        
+        <Text style={styles.modalTitle}>Get a Special Affirmation</Text>
+        
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>What do you need help with?</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="e.g., I need help with my confidence"
+            value={question1}
+            onChangeText={setQuestion1}
+            multiline
+            numberOfLines={3}
+          />
         </View>
 
-        {/* Confirm Button */}
-        <TouchableOpacity 
-          onPress={generateSpecialAffirmation} 
-          style={[styles.confirmButton, isLoading && { opacity: 0.5 }]}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>What tone would you like?</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="e.g., encouraging, motivational, gentle"
+            value={question2}
+            onChangeText={setQuestion2}
+            multiline
+            numberOfLines={3}
+          />
+        </View>
+
+        <TouchableOpacity
+          style={[styles.generateButton, isLoading && styles.generateButtonDisabled]}
+          onPress={generateSpecialAffirmation}
           disabled={isLoading}
         >
-          <Text style={styles.confirmButtonText}>Generate</Text>
+          <Text style={styles.generateButtonText}>
+            {isLoading ? "Generating..." : "Generate Special Affirmation"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
+          <Text style={styles.cancelButtonText}>Cancel</Text>
         </TouchableOpacity>
       </View>
     </Modal>
@@ -88,81 +107,79 @@ export const SpecialAffirmationModal: React.FC<SpecialAffirmationModalProps> = (
 
 const styles = StyleSheet.create({
   modal: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: "flex-end",
     margin: 0,
   },
   modalContent: {
-    backgroundColor: "white",
-    padding: 30,
-    borderRadius: 20,
-    width: "90%",
-    height: "40%", // Takes 40% of screen height
-    justifyContent: "space-between", // Distributes content evenly
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    backgroundColor: "#F9F6F2",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingTop: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+    minHeight: hp("40%"),
+  },
+  handle: {
+    width: 40,
+    height: 4,
+    backgroundColor: "#D0D0D0",
+    borderRadius: 2,
+    alignSelf: "center",
+    marginBottom: 20,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
-    fontFamily: "serif",
     textAlign: "center",
+    marginBottom: hp("4%"),
+    color: "#333",
+    fontFamily: "serif",
   },
-  firstModalLabel: {
-    marginBottom: 10,
-    marginTop: 35,
+  inputContainer: {
+    marginBottom: hp("3%"),
+  },
+  label: {
     fontSize: 16,
     fontWeight: "600",
+    marginBottom: 8,
+    color: "#333",
     fontFamily: "serif",
   },
-  modalLabel: {
-    marginBottom: 10,
-    fontSize: 16,
-    fontWeight: "600",
-    fontFamily: "serif",
-  },
-  input: {
-    backgroundColor: "#F0F0F0",
+  textInput: {
+    backgroundColor: "#FFF",
+    borderRadius: 12,
     padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
     fontSize: 16,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
     fontFamily: "serif",
-    minHeight: 50, // Makes inputs taller
+    textAlignVertical: "top",
   },
-  confirmButton: {
-    marginTop: 15,
-    backgroundColor: "#C9B299",
-    padding: 15,
-    borderRadius: 10,
+  generateButton: {
+    backgroundColor: "#F28B82",
+    paddingVertical: hp("2%"),
+    paddingHorizontal: wp("5%"),
+    borderRadius: 25,
     alignItems: "center",
-  },
-  confirmButtonText: {
-    fontWeight: "bold",
-    fontSize: 16,
-    fontFamily: "serif",
-  },
-  adInfoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#F3EDE7",
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 15,
+    justifyContent: "center",
     marginBottom: 15,
   },
-  adInfoText: {
-    fontSize: 14,
-    color: "#555",
-    marginLeft: 10, // Ensures space between icon & text
-    fontWeight: "600",
+  generateButtonDisabled: {
+    opacity: 0.6,
+  },
+  generateButtonText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#FFF",
+    fontFamily: "serif",
+  },
+  cancelButton: {
+    paddingVertical: 10,
+    alignItems: "center",
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    color: "#666",
     fontFamily: "serif",
   },
 }); 
