@@ -17,6 +17,9 @@ export const AffirmationDisplay: React.FC<AffirmationDisplayProps> = ({
   fadeCreatingAnim,
   textFieldHeight,
 }) => {
+  // Calculate font size to cover 60% of the container height (50% bigger than 40%)
+  const fontSize = Math.max(16, Math.min(36, textFieldHeight * 0.6));
+  
   return (
     <View style={[styles.affirmationContainer, { height: textFieldHeight }]}>
       <ScrollView 
@@ -25,11 +28,11 @@ export const AffirmationDisplay: React.FC<AffirmationDisplayProps> = ({
         showsVerticalScrollIndicator={false}
       >
         {showCreatingText ? (
-          <Animated.Text style={[styles.creatingText, { opacity: fadeCreatingAnim }]}>
+          <Animated.Text style={[styles.creatingText, { opacity: fadeCreatingAnim, fontSize }]}>
             Creating Your Affirmation...
           </Animated.Text>
         ) : (
-          <Animated.Text style={[styles.affirmationText, { opacity: fadeAnim }]}>
+          <Animated.Text style={[styles.affirmationText, { opacity: fadeAnim, fontSize }]}>
             {affirmation}
           </Animated.Text>
         )}
@@ -51,15 +54,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   affirmationText: {
-    fontSize: 18,
     textAlign: "center",
     fontFamily: "serif",
     color: "#555",
     flex: 1,
     textAlignVertical: "center",
+    lineHeight: 50,
   },
   creatingText: {
-    fontSize: 22,
     fontStyle: "italic",
     textAlign: "center",
     fontFamily: "serif",

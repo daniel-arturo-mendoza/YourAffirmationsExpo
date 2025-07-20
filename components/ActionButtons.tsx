@@ -58,8 +58,10 @@ const styles = StyleSheet.create({
     marginBottom: hp("0.05%"),
   },
   iconButton: {
-    padding: wp("1%"),
+    padding: 15,
     alignItems: "center",
     justifyContent: "center",
+    minWidth: 44,
+    minHeight: 44,
   },
 }); 
