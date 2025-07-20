@@ -25,7 +25,7 @@ export const useDimensions = (): UseDimensionsReturn => {
       screenWidth: width,
       dynamicSpacing: Math.max(4, Math.round(8 * scale)), // Responsive spacing
       textFieldHeight: Math.max(200, Math.round(screenHeight * 0.25)), // Responsive height
-      iconSize: Math.max(24, Math.round(Math.min(width, height) * 0.06)), // Responsive icon size
+      iconSize: Math.max(29, Math.round(Math.min(width, height) * 0.072)), // 20% bigger icon size
       iconSpacing: Math.max(16, Math.round(height * 0.03)), // Responsive spacing
     };
   }, []);

@@ -69,6 +69,7 @@ const createResponsiveStyles = (componentSizes: any, spacing: any) => StyleSheet
     marginVertical: spacing.sm,
     gap: spacing.xl,
     marginBottom: spacing.xs,
+    width: "100%", // Ensure full width
   },
   iconButton: {
     padding: componentSizes.buttonPadding,

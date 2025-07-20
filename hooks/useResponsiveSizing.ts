@@ -98,9 +98,9 @@ export const useResponsiveSizing = (): ResponsiveSizingReturn => {
     const componentSizes = {
       chipHeight: Math.max(32, Math.round(32 * scale)),
       chipPadding: Math.max(8, Math.round(12 * scale)),
-      buttonHeight: Math.max(44, Math.round(48 * scale)), // Minimum touch target
-      buttonPadding: Math.max(12, Math.round(16 * scale)),
-      iconSize: Math.max(24, Math.round(Math.min(screenWidth, screenHeight) * 0.06)),
+      buttonHeight: Math.max(53, Math.round(58 * scale)), // 20% bigger (48 * 1.2 = 57.6)
+      buttonPadding: Math.max(14, Math.round(19 * scale)), // 20% bigger (16 * 1.2 = 19.2)
+      iconSize: Math.max(29, Math.round(Math.min(screenWidth, screenHeight) * 0.072)), // 20% bigger (0.06 * 1.2 = 0.072)
       modalHeight: Math.max(300, Math.round(screenHeight * 0.4)),
       containerHeight: Math.max(60, Math.round(screenHeight * 0.08)), // For chip container
     };

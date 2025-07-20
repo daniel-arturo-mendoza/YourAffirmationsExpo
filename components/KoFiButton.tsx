@@ -13,7 +13,16 @@ const KoFiButton: React.FC<KoFiButtonProps> = ({ iconSize }) => {
   };
 
   return (
-    <TouchableOpacity onPress={openKoFi} style={{ padding: iconSize * 0.02 }}>
+    <TouchableOpacity 
+      onPress={openKoFi} 
+      style={{ 
+        padding: iconSize * 0.3, // Match other button padding
+        alignItems: "center",
+        justifyContent: "center",
+        minWidth: iconSize * 1.5, // Match other button size
+        minHeight: iconSize * 1.5,
+      }}
+    >
       <Image 
         source={{ uri: "https://storage.ko-fi.com/cdn/cup-border.png" }} 
         style={{ width: iconSize, height: iconSize, resizeMode: "contain" }} 
