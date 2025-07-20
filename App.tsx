@@ -28,6 +28,8 @@ import { copyToClipboard, shareAffirmation } from "./utils/affirmationUtils";
 import { AffirmationService } from "./services/affirmationService";
 import { useAffirmationAnimation } from "./hooks/useAffirmationAnimation";
 import { useChipSelection } from "./hooks/useChipSelection";
+import { useModalDialog } from "./hooks/useModalDialog";
+import { SpecialAffirmationModal } from "./components/SpecialAffirmationModal";
 
 
 
@@ -55,10 +57,8 @@ const topics = TOPICS;
 const App: React.FC = () => {
   const [clickCount, setClickCount] = useState(0);
 
-  // Test modal state
-  const [isTestModalVisible, setTestModalVisible] = useState(false);
-  const [question1, setQuestion1] = useState(""); // User input for Q1
-  const [question2, setQuestion2] = useState(""); // User input for Q2
+  // Modal state
+  const { isModalVisible, toggleModal } = useModalDialog();
   const [specialAffirmation, setSpecialAffirmation] = useState("");
   const question1Ref = useRef("");
   const question2Ref = useRef("");
@@ -66,8 +66,6 @@ const App: React.FC = () => {
   const hasEarnedReward = useRef(false);
 
   const isAlternativeAdPath = useRef(false);
-
-  const toggleTestModal = () => setTestModalVisible(!isTestModalVisible);
 
 
 
@@ -109,15 +107,7 @@ const App: React.FC = () => {
       }
   };
 
-  const generateSpecialAffirmation = async () => {
-      try {
-          const affirmation = await AffirmationService.generateSpecialAffirmation(question1, question2);
-          setSpecialAffirmation(affirmation);
-      } catch (error) {
-          console.error("❌ Error generating special affirmation:", error);
-          setSpecialAffirmation("❌ Error generating special affirmation. Please try again.");
-      }
-  };
+
 
   const generateSpecialAffirmationAfterAd = async (need: string, tone: string) => {
       try {
@@ -289,59 +279,26 @@ const App: React.FC = () => {
 
         {/* Test Button */}
         <View style={styles.specialAffirmationWrapper}>  
-          <TouchableOpacity 
-            onPress={() => {
-              console.log("🧪 Test button pressed!");
-              toggleTestModal();
-            }} 
-            style={[styles.confirmButton, isLoading && { opacity: 0.5 }]} 
-            disabled={isLoading}
-          >
-            <Text style={styles.buttonText}>Get a Special Affirmation</Text>
-          </TouchableOpacity>
+                      <TouchableOpacity 
+              onPress={() => {
+                console.log("🧪 Test button pressed!");
+                toggleModal();
+              }} 
+              style={[styles.specialAffirmationButton, isLoading && { opacity: 0.5 }]} 
+              disabled={isLoading}
+            >
+              <Text style={styles.buttonText}>Get a Special Affirmation</Text>
+            </TouchableOpacity>
         </View>
 
 
 
-        {/* Test Modal Dialog */}
-        <Modal isVisible={isTestModalVisible} onBackdropPress={toggleTestModal} style={styles.testModal}>
-          <View style={styles.testModalContent}>
-            <Text style={styles.testModalTitle}>Personalize Your Affirmation</Text>
-
-            {/* Question 1 */}
-            <Text style={styles.firstModalLabel}>What do you need most right now?</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g., Confidence for my job interview"
-              value={question1}
-              onChangeText={setQuestion1}
-              maxLength={50}
-            />
-
-            {/* Question 2 */}
-            <Text style={styles.modalLabel}>How do you want it to feel?</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g., Powerful and inspiring"
-              value={question2}
-              onChangeText={setQuestion2}
-              maxLength={50}
-            />
-
-            {/* 🔹 New Message to Inform About Ad */}
-            <View style={styles.adInfoContainer}>
-              <MaterialCommunityIcons name="play-circle-outline" size={24} color="#C9B299" />
-              <Text style={styles.adInfoText}>
-                🎥 You'll watch a short ad before receiving your personalized affirmation!
-              </Text>
-            </View>
-
-            {/* Confirm Button */}
-            <TouchableOpacity onPress={generateSpecialAffirmation} style={styles.confirmButton}>
-              <Text style={styles.confirmButtonText}>Generate</Text>
-            </TouchableOpacity>
-          </View>
-        </Modal>
+        {/* Special Affirmation Modal */}
+        <SpecialAffirmationModal
+          isVisible={isModalVisible}
+          onClose={toggleModal}
+          onAffirmationGenerated={setSpecialAffirmation}
+        />
 
         {/* Display Special Affirmation */}
         {specialAffirmation ? (
@@ -391,6 +348,7 @@ const styles = StyleSheet.create({
     fontFamily: "serif", // Adjust if you have a specific font
   },
   specialAffirmationWrapper: {
+    marginTop: hp("3%"),
     marginBottom: hp("2%"),
     alignItems: "center",
   },
@@ -555,59 +513,7 @@ const styles = StyleSheet.create({
     width: "75%", // Slightly reduced width to look better
     elevation: 3, // Subtle shadow for depth
   },
-  //start - syle conf for rewarded Ad modal
-  modal: {
-    justifyContent: "flex-end",
-    margin: 0,
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
-    fontFamily: "serif",
-    textAlign: "center",
-  },
-  modalLabel: {
-    marginBottom: 10,
-    fontSize: 16,
-    fontWeight: "600",
-    fontFamily: "serif",
-  },
-  firstModalLabel: {
-    marginBottom: 10,
-    marginTop: 35,
-    fontSize: 16,
-    fontWeight: "600",
-    fontFamily: "serif",
-  },
-  input: {
-    backgroundColor: "#F0F0F0",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-    fontSize: 16,
-    fontFamily: "serif",
-    minHeight: 50, // Makes inputs taller
-  },
-  confirmButton: {
-    marginTop: hp("0.6%"),
-    backgroundColor: "#C9B299",
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  confirmButtonText: {
-    fontWeight: "bold",
-    fontSize: 16,
-    fontFamily: "serif",
-  },
-  //end - syle conf for rewarded Ad modal
+
   adInfoContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -638,55 +544,7 @@ const styles = StyleSheet.create({
     color: "#555",
     fontFamily: "serif",
   },
-  // Test modal styles
-  testModal: {
-    justifyContent: "center",
-    alignItems: "center",
-    margin: 0,
-  },
-  testModalContent: {
-    backgroundColor: "white",
-    padding: 30,
-    borderRadius: 20,
-    width: "90%",
-    height: hp("40%"), // Takes 40% of screen height
-    justifyContent: "space-between", // Distributes content evenly
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  testModalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-    fontFamily: "serif",
-    textAlign: "center",
-  },
-  testModalMessage: {
-    fontSize: 16,
-    color: "#555",
-    marginBottom: 20,
-    fontFamily: "serif",
-    textAlign: "center",
-  },
-  agreeButton: {
-    backgroundColor: "#C9B299",
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    alignItems: "center",
-  },
-  agreeButtonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#000",
-    fontFamily: "serif",
-  },
+
 
 });
 
