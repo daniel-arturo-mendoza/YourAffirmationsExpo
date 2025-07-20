@@ -23,8 +23,9 @@ import { widthPercentageToDP as wp, heightPercentageToDP as hp } from "react-nat
 import Modal from "react-native-modal";
 import { getStoredUUID } from "./utils/uuidGenerator";
 import KoFiButton from "./components/KoFiButton";
-import { API_APP_LAMBDA_URL, KOFI_URL, MOODS, ITEMS, TOPICS } from "./utils/constants";
+import { KOFI_URL, MOODS, ITEMS, TOPICS } from "./utils/constants";
 import { copyToClipboard, shareAffirmation } from "./utils/affirmationUtils";
+import { AffirmationService } from "./services/affirmationService";
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -202,47 +203,14 @@ const App: React.FC = () => {
   };
 
   const generateAffirmation = async () => {
-      console.log("🎯 Generating affirmation...");
-      
       const selectedChips = [];
       if (selectedMood) selectedChips.push(selectedMood);
       if (selectedItem) selectedChips.push(selectedItem);
       if (selectedTopic) selectedChips.push(selectedTopic);
 
-      if (selectedChips.length === 0) {
-          setAffirmation("Please select at least one category to generate an affirmation!");
-          return;
-      }
-
-      const requestBody = {
-          chips: selectedChips,
-          userUUID: await getStoredUUID()
-      };
-
-      console.log("📤 Request body:", requestBody);
-
       try {
-          const response = await fetch(API_APP_LAMBDA_URL, {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(requestBody)
-          });
-
-          if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          console.log("📥 Response data:", data);
-
-          if (data.affirmation) {
-              setAffirmation(data.affirmation);
-          } else {
-              throw new Error("No affirmation in response");
-          }
-
+          const affirmation = await AffirmationService.generateAffirmation(selectedChips);
+          setAffirmation(affirmation);
       } catch (error) {
           console.error("❌ Error generating affirmation:", error);
           setAffirmation("❌ Error generating affirmation. Please try again.");
@@ -250,43 +218,9 @@ const App: React.FC = () => {
   };
 
   const generateSpecialAffirmation = async () => {
-      console.log("🎯 Generating special affirmation...");
-      
-      if (!question1.trim() || !question2.trim()) {
-          setSpecialAffirmation("Please fill in both questions to generate a special affirmation!");
-          return;
-      }
-
-      const requestBody = {
-          need: question1.trim(),
-          tone: question2.trim(),
-          userUUID: await getStoredUUID()
-      };
-
-      console.log("📤 Special request body:", requestBody);
-
       try {
-          const response = await fetch(API_APP_LAMBDA_URL, {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(requestBody)
-          });
-
-          if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          console.log("📥 Special response data:", data);
-
-          if (data.affirmation) {
-              setSpecialAffirmation(data.affirmation);
-          } else {
-              throw new Error("No affirmation in response");
-          }
-
+          const affirmation = await AffirmationService.generateSpecialAffirmation(question1, question2);
+          setSpecialAffirmation(affirmation);
       } catch (error) {
           console.error("❌ Error generating special affirmation:", error);
           setSpecialAffirmation("❌ Error generating special affirmation. Please try again.");
@@ -294,43 +228,9 @@ const App: React.FC = () => {
   };
 
   const generateSpecialAffirmationAfterAd = async (need: string, tone: string) => {
-      console.log("🎯 Generating special affirmation after ad...");
-      
-      if (!need.trim() || !tone.trim()) {
-          setSpecialAffirmation("Please fill in both questions to generate a special affirmation!");
-          return;
-      }
-
-      const requestBody = {
-          need: need.trim(),
-          tone: tone.trim(),
-          userUUID: await getStoredUUID()
-      };
-
-      console.log("📤 After-ad request body:", requestBody);
-
       try {
-          const response = await fetch(API_APP_LAMBDA_URL, {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(requestBody)
-          });
-
-          if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data = await response.json();
-          console.log("📥 After-ad response data:", data);
-
-          if (data.affirmation) {
-              setSpecialAffirmation(data.affirmation);
-          } else {
-              throw new Error("No affirmation in response");
-          }
-
+          const affirmation = await AffirmationService.generateSpecialAffirmationAfterAd(need, tone);
+          setSpecialAffirmation(affirmation);
       } catch (error) {
           console.error("❌ Error generating special affirmation after ad:", error);
           setSpecialAffirmation("❌ Error generating special affirmation. Please try again.");
