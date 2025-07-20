@@ -26,8 +26,9 @@ import KoFiButton from "./components/KoFiButton";
 import { KOFI_URL, MOODS, ITEMS, TOPICS } from "./utils/constants";
 import { copyToClipboard, shareAffirmation } from "./utils/affirmationUtils";
 import { AffirmationService } from "./services/affirmationService";
+import { useAffirmationAnimation } from "./hooks/useAffirmationAnimation";
 
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 
 const fetchUUID = async () => {
     const userUUID = await getStoredUUID();
@@ -124,78 +125,7 @@ const App: React.FC = () => {
     }).start();
   };
 
-  const fadeAnim = useRef(new Animated.Value(1)).current; // 👈 Opacity animation value
-  const [isLoading, setIsLoading] = useState(false);
-  const [showCreatingText, setShowCreatingText] = useState(false);
-  const fadeCreatingAnim = useRef(new Animated.Value(0)).current; // Controls the loading text opacity
-
-  const updateAffirmation = async (fetchFunction: () => Promise<void>) => {
-      setIsLoading(true); // Disable button
-      setShowCreatingText(false);
-
-      // 🔹 Fade out existing text
-      Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-      }).start();
-
-      // 🔹 Wait for fade out to complete
-      await wait(300);
-
-      // 🔹 Show "Creating..." text
-      setShowCreatingText(true);
-      Animated.timing(fadeCreatingAnim, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-      }).start();
-
-      try {
-          // 🔹 Execute the provided function
-          await fetchFunction();
-
-          // 🔹 Fade out "Creating..." text
-          Animated.timing(fadeCreatingAnim, {
-              toValue: 0,
-              duration: 300,
-              useNativeDriver: true,
-          }).start();
-
-          await wait(300);
-          setShowCreatingText(false);
-
-          // 🔹 Fade in new text
-          Animated.timing(fadeAnim, {
-              toValue: 1,
-              duration: 300,
-              useNativeDriver: true,
-          }).start();
-
-      } catch (error) {
-          console.error("❌ Error in updateAffirmation:", error);
-          setAffirmation("❌ Error generating affirmation. Please try again.");
-          
-          // 🔹 Fade out "Creating..." text
-          Animated.timing(fadeCreatingAnim, {
-              toValue: 0,
-              duration: 300,
-              useNativeDriver: true,
-          }).start();
-          
-          await wait(300);
-          setShowCreatingText(false);
-
-          // 🔹 Fade in error text
-          Animated.timing(fadeAnim, {
-              toValue: 1,
-              duration: 300,
-              useNativeDriver: true,
-          }).start();
-      } finally {
-          setIsLoading(false); // Re-enable button
-      }
-  };
+  const { fadeAnim, fadeCreatingAnim, isLoading, showCreatingText, updateAffirmation } = useAffirmationAnimation();
 
   const testGenerateAffirmation = async () => {
       console.log("🧪 Test function called");
@@ -364,7 +294,7 @@ const App: React.FC = () => {
           <Pressable 
             onPress={() => {
               console.log("🔄 Reload button pressed");
-              updateAffirmation(generateAffirmation);
+              updateAffirmation(generateAffirmation, setAffirmation);
             }} 
             style={[styles.iconButton, isLoading && { opacity: 0.5 }]}
             disabled={isLoading}
