@@ -20,7 +20,10 @@
     "react-native-modal": "^14.0.0-rc.1",
     "react-native-responsive-screen": "^1.4.2",
     "react-native-vector-icons": "^10.2.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "react-dom": "19.0.0",
+    "react-native-web": "^0.20.0",
+    "@expo/metro-runtime": "~5.0.4"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

@@ -63,3 +63,9 @@ ios/Podfile.lock
 
 # OS
 Thumbs.db
+
+# SERVER
+server/
+
+# Old App
+old_app/

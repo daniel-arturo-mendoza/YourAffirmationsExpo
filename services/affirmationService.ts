@@ -2,10 +2,10 @@ import { getStoredUUID } from "../utils/uuidGenerator";
 import { API_APP_LAMBDA_URL } from "../utils/constants";
 
 export interface AffirmationRequest {
-  chips?: string[];
+  labels?: string[]; // was chips
   need?: string;
   tone?: string;
-  userUUID: string;
+  uuid: string; // was userUUID
 }
 
 export interface AffirmationResponse {
@@ -20,10 +20,14 @@ export class AffirmationService {
   }
 
   private static async createRequestBody(data: Partial<AffirmationRequest>): Promise<AffirmationRequest> {
+    // Map internal variable names to backend-required keys
     const userUUID = await getStoredUUID();
+    // If 'chips' is present, map it to 'labels'
+    const labels = (data as any).chips || data.labels;
     return {
       ...data,
-      userUUID,
+      labels,
+      uuid: userUUID,
     };
   }
 
@@ -56,7 +60,8 @@ export class AffirmationService {
       throw new Error("Please select at least one category to generate an affirmation!");
     }
 
-    const requestBody = await this.createRequestBody({ chips: selectedChips });
+    // Map 'selectedChips' to 'labels' for the backend
+    const requestBody = await this.createRequestBody({ labels: selectedChips });
     console.log("📤 Request body:", requestBody);
 
     try {
