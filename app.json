@@ -21,10 +21,21 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.YourAffirmationsExpo"
+      "package": "com.dmdz.youraffirmations",
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-3940256099942544~3347511713"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "3ee7d36f-5a68-4517-819d-db552b6715e4"
+      }
+    },
+    "owner": "danielmdzhdz"
   }
 }

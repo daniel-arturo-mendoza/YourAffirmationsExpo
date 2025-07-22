@@ -22,6 +22,7 @@ import { SelectedChipsDisplay } from "./components/SelectedChipsDisplay";
 import { AffirmationDisplay } from "./components/AffirmationDisplay";
 import { ActionButtons } from "./components/ActionButtons";
 import { MainLayout } from "./components/MainLayout";
+// import AdBanner from './components/AdBanner';
 
 
 
@@ -54,19 +55,19 @@ const ThemedApp: React.FC = () => {
     getSelectedChips,
   } = useChipSelection();
 
-  const { fadeAnim, fadeCreatingAnim, showCreatingText, updateAffirmation } = useAffirmationAnimation();
+  const { fadeAnim, fadeCreatingAnim, pulseAnim, showCreatingText, updateAffirmation } = useAffirmationAnimation();
 
   // Event handlers
   const { handleReload, handleCopy, handleShare, handleSpecialAffirmation, handleChipPress } = useEventHandlers({
     affirmation,
     generateAffirmation,
+    updateAffirmation, // <-- pass this
     setAffirmation,
     toggleModal,
     getSelectedChips,
   });
 
-
-
+  
   const themedStyles = createThemedStyles(theme);
   
   return (
@@ -115,6 +116,7 @@ const ThemedApp: React.FC = () => {
         showCreatingText={showCreatingText}
         fadeAnim={fadeAnim}
         fadeCreatingAnim={fadeCreatingAnim}
+        pulseAnim={pulseAnim}
         textFieldHeight={textFieldHeight}
       />
 
@@ -154,6 +156,9 @@ const ThemedApp: React.FC = () => {
           <Text style={themedStyles.affirmationText}>{specialAffirmation}</Text>
         </View>
       ) : null}
+
+      {/* Banner Ad anchored at the bottom */}
+      {/* Remove the AdBanner and adContainer View */}
     </MainLayout>
   );
 };
