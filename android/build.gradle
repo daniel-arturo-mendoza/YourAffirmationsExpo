@@ -30,6 +30,7 @@ allprojects {
     google()
     mavenCentral()
     maven { url 'https://www.jitpack.io' }
+    maven { url 'https://sdk-download.startapp.com/maven' }
   }
 }
 

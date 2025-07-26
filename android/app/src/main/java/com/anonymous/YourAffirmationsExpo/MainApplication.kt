@@ -16,6 +16,10 @@ import com.facebook.soloader.SoLoader
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
 
+// Start.io SDK import
+import com.startapp.sdk.adsbase.StartAppAd
+import com.startapp.sdk.adsbase.StartAppSDK
+
 class MainApplication : Application(), ReactApplication {
 
   override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(
@@ -47,6 +51,11 @@ class MainApplication : Application(), ReactApplication {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
     }
+    
+    // Initialize Start.io SDK
+    StartAppSDK.init(this, "206505564", false)
+    StartAppAd.disableSplash()
+    
     ApplicationLifecycleDispatcher.onApplicationCreate(this)
   }
 
