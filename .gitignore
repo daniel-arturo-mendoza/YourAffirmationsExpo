@@ -68,4 +68,9 @@ Thumbs.db
 server/
 
 # Old App
+old_app/android/app/.cxx/
+android/app/debug.keystore
+*.apk
+android/app/.cxx/
+android/app/debug.keystore
 old_app/
