@@ -69,7 +69,7 @@ export class AffirmationService {
       console.log("📥 Response data:", data);
       return data.affirmation;
     } catch (error) {
-      console.error("❌ Error generating affirmation:", error);
+      // Don't log here since it will be logged in the calling function
       throw error;
     }
   }

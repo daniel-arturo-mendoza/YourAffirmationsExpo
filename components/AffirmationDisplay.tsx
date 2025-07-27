@@ -7,6 +7,7 @@ interface AffirmationDisplayProps {
   showCreatingText: boolean;
   fadeAnim: Animated.Value;
   fadeCreatingAnim: Animated.Value;
+  pulseAnim: Animated.Value;
   textFieldHeight: number;
 }
 
@@ -15,8 +16,10 @@ export const AffirmationDisplay: React.FC<AffirmationDisplayProps> = ({
   showCreatingText,
   fadeAnim,
   fadeCreatingAnim,
+  pulseAnim,
   textFieldHeight,
 }) => {
+  console.log("🎬 AffirmationDisplay render:", { showCreatingText, affirmation: affirmation.substring(0, 50) });
   const { spacing } = useResponsiveSizing();
   // Calculate font size to cover 60% of the container height (50% bigger than 40%)
   const fontSize = Math.max(16, Math.min(36, textFieldHeight * 0.6));
@@ -31,7 +34,7 @@ export const AffirmationDisplay: React.FC<AffirmationDisplayProps> = ({
         showsVerticalScrollIndicator={false}
       >
         {showCreatingText ? (
-          <Animated.Text style={[responsiveStyles.creatingText, { opacity: fadeCreatingAnim, fontSize }]}>
+          <Animated.Text style={[responsiveStyles.creatingText, { opacity: fadeCreatingAnim, transform: [{ scale: pulseAnim }], fontSize }]}>
             Creating Your Affirmation...
           </Animated.Text>
         ) : (

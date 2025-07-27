@@ -6,6 +6,7 @@ const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 export const useAffirmationAnimation = () => {
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const fadeCreatingAnim = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
   const [isLoading, setIsLoading] = useState(false);
   const [showCreatingText, setShowCreatingText] = useState(false);
 
@@ -49,7 +50,30 @@ export const useAffirmationAnimation = () => {
     });
   };
 
+  const startPulseAnimation = () => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 0.9,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  };
+
+  const stopPulseAnimation = () => {
+    pulseAnim.stopAnimation();
+    pulseAnim.setValue(1);
+  };
+
   const updateAffirmation = async (fetchFunction: () => Promise<void>, setAffirmation?: (text: string) => void) => {
+    console.log("🎬 Starting updateAffirmation animation...");
     setIsLoading(true);
     setShowCreatingText(false);
 
@@ -57,14 +81,17 @@ export const useAffirmationAnimation = () => {
     await animateFadeOut();
 
     // Show "Creating..." text
+    console.log("🎬 Showing creating text and starting pulse...");
     setShowCreatingText(true);
     await animateCreatingTextFadeIn();
+    startPulseAnimation();
 
     try {
       // Execute the provided function
       await fetchFunction();
 
       // Fade out "Creating..." text
+      stopPulseAnimation();
       await animateCreatingTextFadeOut();
       setShowCreatingText(false);
 
@@ -80,6 +107,7 @@ export const useAffirmationAnimation = () => {
       }
       
       // Fade out "Creating..." text
+      stopPulseAnimation();
       await animateCreatingTextFadeOut();
       setShowCreatingText(false);
 
@@ -93,6 +121,7 @@ export const useAffirmationAnimation = () => {
   return {
     fadeAnim,
     fadeCreatingAnim,
+    pulseAnim,
     isLoading,
     showCreatingText,
     updateAffirmation,

@@ -55,7 +55,7 @@ const ThemedApp: React.FC = () => {
     getSelectedChips,
   } = useChipSelection();
 
-  const { fadeAnim, fadeCreatingAnim, pulseAnim, showCreatingText, updateAffirmation } = useAffirmationAnimation();
+  const { fadeAnim, fadeCreatingAnim, pulseAnim, isLoading: animationLoading, showCreatingText, updateAffirmation } = useAffirmationAnimation();
 
   // Event handlers
   const { handleReload, handleCopy, handleShare, handleSpecialAffirmation, handleChipPress } = useEventHandlers({

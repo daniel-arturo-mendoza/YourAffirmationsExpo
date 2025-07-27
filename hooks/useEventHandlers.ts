@@ -4,6 +4,7 @@ import { copyToClipboard, shareAffirmation } from "../utils/affirmationUtils";
 interface UseEventHandlersProps {
   affirmation: string;
   generateAffirmation: (selectedChips: string[]) => Promise<void>;
+  updateAffirmation: (fetchFunction: () => Promise<void>, setAffirmation?: (text: string) => void) => Promise<void>;
   setAffirmation: (text: string) => void;
   toggleModal: () => void;
   getSelectedChips: () => string[];
@@ -28,8 +29,8 @@ export const useEventHandlers = ({
   const handleReload = useCallback(() => {
     console.log("🔄 Reload button pressed");
     const selectedChips = getSelectedChips();
-    generateAffirmation(selectedChips);
-  }, [generateAffirmation, getSelectedChips]);
+    updateAffirmation(() => generateAffirmation(selectedChips), setAffirmation);
+  }, [updateAffirmation, generateAffirmation, getSelectedChips, setAffirmation]);
 
   const handleCopy = useCallback(() => {
     console.log("📋 Copy button pressed");
