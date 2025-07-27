@@ -29,6 +29,7 @@ class MainApplication : Application(), ReactApplication {
             val packages = PackageList(this).packages
             // Packages that cannot be autolinked yet can be added manually here, for example:
             // packages.add(MyReactNativePackage())
+            packages.add(StartIoPackage())
             return packages
           }
 
@@ -52,8 +53,9 @@ class MainApplication : Application(), ReactApplication {
       load()
     }
     
-    // Initialize Start.io SDK
-    StartAppSDK.init(this, "206505564", false)
+    // Initialize Start.io SDK with test mode
+    StartAppSDK.setTestAdsEnabled(true) // Enable test ads for development
+    StartAppSDK.init(this, "205489527", true) // Use demo app ID for testing
     StartAppAd.disableSplash()
     
     ApplicationLifecycleDispatcher.onApplicationCreate(this)

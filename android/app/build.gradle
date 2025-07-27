@@ -152,7 +152,7 @@ dependencies {
     implementation("com.facebook.react:react-android")
 
     // Start.io SDK dependencies
-    implementation 'com.startapp:inapp-sdk:4.10.1'
+    implementation 'com.startapp:inapp-sdk:5.+'
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

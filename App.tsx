@@ -22,7 +22,7 @@ import { SelectedChipsDisplay } from "./components/SelectedChipsDisplay";
 import { AffirmationDisplay } from "./components/AffirmationDisplay";
 import { ActionButtons } from "./components/ActionButtons";
 import { MainLayout } from "./components/MainLayout";
-// import AdBanner from './components/AdBanner';
+import BannerAd from './components/BannerAd';
 
 
 
@@ -33,6 +33,8 @@ import { MainLayout } from "./components/MainLayout";
 const moods = MOODS;
 const items = ITEMS;
 const topics = TOPICS;
+
+
 
 const ThemedApp: React.FC = () => {
   const { theme } = useTheme();
@@ -157,8 +159,8 @@ const ThemedApp: React.FC = () => {
         </View>
       ) : null}
 
-      {/* Banner Ad anchored at the bottom */}
-      {/* Remove the AdBanner and adContainer View */}
+      {/* Start.io Banner Ad */}
+      <BannerAd />
     </MainLayout>
   );
 };
