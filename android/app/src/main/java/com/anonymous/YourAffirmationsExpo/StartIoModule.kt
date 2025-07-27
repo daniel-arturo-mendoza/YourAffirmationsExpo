@@ -54,6 +54,16 @@ class StartIoBannerViewManager : SimpleViewManager<LinearLayout>() {
         val container = LinearLayout(reactContext)
         container.orientation = LinearLayout.VERTICAL
         
+        // Set container to match screen width
+        val screenWidth = reactContext.resources.displayMetrics.widthPixels
+        container.layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        
+                                // Remove debug background from container - let it be transparent
+                        container.setBackgroundColor(0x00000000.toInt()) // Transparent background
+        
         try {
             // Show loading state first
             showLoadingBanner(container, reactContext)
@@ -81,20 +91,31 @@ class StartIoBannerViewManager : SimpleViewManager<LinearLayout>() {
                     container.post {
                         container.removeAllViews()
                         
-                        // Hardcode dimensions for testing
-                        adView?.layoutParams = LinearLayout.LayoutParams(972, 100) // Hardcoded width and height
-                        adView?.setBackgroundColor(0xFFFF0000.toInt()) // Red background
+                        // Use a reasonable banner height that works
+                        val density = reactContext.resources.displayMetrics.density
+                        val bannerHeightDp = 87 // Based on previous logs showing 87px height
+                        val bannerHeightPx = (bannerHeightDp * density).toInt()
+                        
+                        adView?.layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, 
+                            bannerHeightPx
+                        )
+                        
+                        // Remove green background to see actual ad content
+                        adView?.setBackgroundColor(0x00000000.toInt()) // Transparent background
                         
                         container.addView(adView)
                         
-                        // Force layout pass
+                        // Force layout pass with the height that Start.io actually uses
+                        val screenWidth = reactContext.resources.displayMetrics.widthPixels
                         adView?.measure(
-                            View.MeasureSpec.makeMeasureSpec(972, View.MeasureSpec.EXACTLY),
-                            View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY)
+                            View.MeasureSpec.makeMeasureSpec(screenWidth, View.MeasureSpec.EXACTLY),
+                            View.MeasureSpec.makeMeasureSpec(bannerHeightPx, View.MeasureSpec.EXACTLY)
                         )
-                        adView?.layout(0, 0, 972, 100)
+                        adView?.layout(0, 0, screenWidth, bannerHeightPx)
                         
-                        Log.d("StartIoBanner", "✅ Start.io TEST banner ad displayed with forced layout")
+                        Log.d("StartIoBanner", "✅ Start.io TEST banner ad displayed with optimal height")
+                        Log.d("StartIoBanner", "Screen width: $screenWidth, Banner height: ${bannerHeightPx}px (${bannerHeightDp}dp)")
                         Log.d("StartIoBanner", "Ad view dimensions: ${adView?.width} x ${adView?.height}")
                         Log.d("StartIoBanner", "Container dimensions: ${container.width} x ${container.height}")
                     }
@@ -131,11 +152,11 @@ class StartIoBannerViewManager : SimpleViewManager<LinearLayout>() {
         container.removeAllViews()
         val fallbackText = TextView(context)
         fallbackText.text = "Start.io Banner Ad"
-        fallbackText.setTextColor(0xFFFFFFFF.toInt())
-        fallbackText.textSize = 14f
+        fallbackText.setTextColor(0xFF666666.toInt()) // Use app's text color
+        fallbackText.textSize = 12f
         fallbackText.setPadding(16, 12, 16, 12)
         fallbackText.gravity = android.view.Gravity.CENTER
-        fallbackText.setBackgroundColor(0xFF4CAF50.toInt())
+        fallbackText.setBackgroundColor(0xFFFFFFFF.toInt()) // Use app's background color
         container.addView(fallbackText)
     }
 } 
